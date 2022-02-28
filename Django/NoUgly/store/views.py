@@ -85,6 +85,17 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
+        # qu = Cart_product.objects.filter(uIDX=user)
+        # qu.delete()
         queryset = Order.objects.filter(uIDX=user)
 
         return queryset
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        user = self.request.user
+        if serializer.is_valid():
+            serializer.save(uIDX_id=user.id)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
