@@ -1,5 +1,7 @@
 from __future__ import barry_as_FLUFL
+from email import header
 from math import prod
+from tkinter.tix import Tree
 from .serializers import *
 from rest_framework import permissions, viewsets, status
 from accounts.permissions import IsUserOrReadOnly
@@ -91,11 +93,56 @@ class OrderViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     user = self.request.user
+    #     if serializer.is_valid():
+    #         serializer.save(uIDX_id=user.id)
+    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
+    #     else:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+
+    # def get_serializer(self, *args, **kwargs):
+    #     if "data" in kwargs:
+    #         data = kwargs["data"]
+    #         if isinstance(data, list):
+    #             kwargs["many"] = True
+    #     return super(OrderViewSet, self).get_serializer(*args, **kwargs)
+
+    # def create(self, request, *args, **kwargs):
+    #     many = isinstance(request.data, list)
+    #     print("many : ", many)
+    #     serializer = self.get_serializer(data=request.data, many=many)
+    #     print("시리얼라이저 존재 :", serializer)
+    #     if serializer.is_valid():
+    #         user = self.request.user
+    #         serializer.save(uIDX_id=user.id)
+    #         for i in serializer:
+    #             print("type :", type(i))
+    #             print('i :', i)
+    #             return Response(i.value, status=status.HTTP_201_CREATED)
+
+    #     else:
+    #         return Response(status=status.HTTP_400_BAD_REQUEST)
+
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        user = self.request.user
-        if serializer.is_valid():
+        many = isinstance(request.data, list)
+        print("many : ", many)
+        if not many:
+            serializer = self.get_serializer(data=request.data, many=many)
+            print("시리얼라이저 단일존재 :", serializer)
+            serializer.is_valid(raise_exception=True)
+            user = self.request.user
             serializer.save(uIDX_id=user.id)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, headers=headers, status=status.HTTP_201_CREATED)
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            serializer = self.get_serializer(data=request.data, many=many)
+            print("시리얼라이저 복수존재 :", serializer)
+            serializer.is_valid(raise_exception=True)
+            user = self.request.user
+            serializer.save(uIDX_id=user.id)
+            self.perform_create(serializer)
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, headers=headers, status=status.HTTP_201_CREATED)

@@ -65,7 +65,8 @@ class Order(models.Model):
         max_length=500, verbose_name='주소지', null=False)
     uIDX = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, verbose_name='회원', null=True)
-    fIDX = models.ForeignKey(Product, on_delete=models.SET_NULL, null=True)
+    fIDX = models.ForeignKey(
+        Product, on_delete=models.SET_NULL,  null=True)
 
     class Meta:
         verbose_name = '주문'
