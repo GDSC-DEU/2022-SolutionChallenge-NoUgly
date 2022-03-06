@@ -15,7 +15,7 @@ class ProductNamePriceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Product
-        fields = ['name', 'price', 'image']
+        fields = ['fIDX', 'name', 'price', 'image']
 
 
 class ProductKindSerializer(serializers.ModelSerializer):

@@ -2,6 +2,8 @@ from __future__ import barry_as_FLUFL
 from email import header
 from math import prod
 from tkinter.tix import Tree
+from typing import Optional
+from wsgiref import headers
 from .serializers import *
 from rest_framework import permissions, viewsets, status
 from accounts.permissions import IsUserOrReadOnly
@@ -77,6 +79,25 @@ class CartProuductViewSet(viewsets.ModelViewSet):
 
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        serializer: CartProuductSerializer = self.get_serializer(
+            data=request.data)
+        serializer.is_valid(raise_exception=True)
+        fIDX = serializer.validated_data['fIDX']
+        cart_product: Optional[Cart_product] = self.get_queryset().filter(
+            fIDX=fIDX).first()
+
+        if cart_product is not None:
+            cart_product.quantity = F('quantity') + \
+                serializer.validated_data["quantity"]
+            cart_product.save()
+            cart_product.refresh_from_db()
+            return Response(self.get_serializer(cart_product, many=False).data, status=status.HTTP_200_OK)
+        else:
+            serializer.save()
+            headers = self.get_success_headers(serializer.data)
+            return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 
 class OrderViewSet(viewsets.ModelViewSet):
     queryset = Order.objects.all()
@@ -92,38 +113,6 @@ class OrderViewSet(viewsets.ModelViewSet):
         queryset = Order.objects.filter(uIDX=user)
 
         return queryset
-
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     user = self.request.user
-    #     if serializer.is_valid():
-    #         serializer.save(uIDX_id=user.id)
-    #         return Response(serializer.data, status=status.HTTP_201_CREATED)
-    #     else:
-    #         return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    # def get_serializer(self, *args, **kwargs):
-    #     if "data" in kwargs:
-    #         data = kwargs["data"]
-    #         if isinstance(data, list):
-    #             kwargs["many"] = True
-    #     return super(OrderViewSet, self).get_serializer(*args, **kwargs)
-
-    # def create(self, request, *args, **kwargs):
-    #     many = isinstance(request.data, list)
-    #     print("many : ", many)
-    #     serializer = self.get_serializer(data=request.data, many=many)
-    #     print("시리얼라이저 존재 :", serializer)
-    #     if serializer.is_valid():
-    #         user = self.request.user
-    #         serializer.save(uIDX_id=user.id)
-    #         for i in serializer:
-    #             print("type :", type(i))
-    #             print('i :', i)
-    #             return Response(i.value, status=status.HTTP_201_CREATED)
-
-    #     else:
-    #         return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def create(self, request, *args, **kwargs):
         many = isinstance(request.data, list)
