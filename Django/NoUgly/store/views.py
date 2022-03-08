@@ -1,9 +1,4 @@
-from __future__ import barry_as_FLUFL
-from email import header
-from math import prod
-from tkinter.tix import Tree
 from typing import Optional
-from wsgiref import headers
 from .serializers import *
 from rest_framework import permissions, viewsets, status
 from accounts.permissions import IsUserOrReadOnly
@@ -108,8 +103,6 @@ class OrderViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        # qu = Cart_product.objects.filter(uIDX=user)
-        # qu.delete()
         queryset = Order.objects.filter(uIDX=user)
 
         return queryset

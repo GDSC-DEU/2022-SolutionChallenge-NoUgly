@@ -14,7 +14,7 @@ from pathlib import Path
 from django.core.exceptions import ImproperlyConfigured
 import datetime
 import os
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -50,14 +50,14 @@ INSTALLED_APPS = [
 
     # DRF Authentication 이용
     'rest_framework.authtoken',
-    'rest_auth',
-
+    'rest_framework_simplejwt.token_blacklist',
     # 회원가입
     'django.contrib.sites',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'rest_auth.registration',
+    'dj_rest_auth',
+    'dj_rest_auth.registration',
     'django_filters',
 
     # myapp
@@ -65,6 +65,9 @@ INSTALLED_APPS = [
     'store',
     # 'phonenumber_field',
 
+
+    # provider
+    'allauth.socialaccount.providers.kakao',
 ]
 
 MIDDLEWARE = [
@@ -181,6 +184,18 @@ SITE_ID = 1
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+
+# Kakao
+SOCIALACCOUNT_PROVIDERS = {
+    'kakao': {
+        'APP': {
+            'client_id': os.environ.get('kakao_client_id'),
+            'secret': os.environ.get('kakao_secret'),
+            'key': ''
+        }
+    }
+}
+
 # DRF
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
@@ -190,7 +205,9 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend', ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+
+        'dj_rest_auth.jwt_auth.JWTCookieAuthentication',
+
         # 'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         # 'rest_framework.authentication.BasicAuthentication',
@@ -211,12 +228,18 @@ REST_AUTH_SERIALIZERS = {
     'LOGIN_SERIALIZER': 'accounts.serializers.UserLoginSerializer'
 }
 
-JWT_AUTH = {
-    'JWT_SECRET_KEY': SECRET_KEY,
-    'JWT_ALGORITHM': 'HS256',  # 암호화 알고리즘
-    'JWT_ALLOW_REFRESH': True,  # refresh 사용 여부
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),  # 유효기간 설정
-    # JWT 토큰 갱신 유효기간
-    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=28),
-    # import datetime 상단에 import 하기
+# JWT_AUTH = {
+#     'JWT_SECRET_KEY': SECRET_KEY,
+#     'JWT_ALGORITHM': 'HS256',  # 암호화 알고리즘
+#     'JWT_ALLOW_REFRESH': True,  # refresh 사용 여부
+#     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),  # 유효기간 설정
+#     # JWT 토큰 갱신 유효기간
+#     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=28),
+#     # import datetime 상단에 import 하기
+# }
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(hours=2),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+    'ROTATE_REFRESH_TOKENS': False,  # Token 재발급 관련 설정
+    'BLACKLIST_AFTER_ROTATION': True,
 }
