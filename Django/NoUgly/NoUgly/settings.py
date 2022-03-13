@@ -31,7 +31,7 @@ SECRET_KEY = os.environ.get('NOUGLY_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('NOUGLY_DEBUG', False)
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['*']
 
 # 배포 시
 # ALLOWED_HOSTS = ['cmsong111.pythonanywhere.com']
@@ -68,6 +68,7 @@ INSTALLED_APPS = [
 
     # provider
     'allauth.socialaccount.providers.kakao',
+    'allauth.socialaccount.providers.naver',
 ]
 
 MIDDLEWARE = [
@@ -178,6 +179,7 @@ ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/?verification=1'
 
 REST_USE_JWT = True
 
+# 하나의 사이트에서 여러 domain을 가질 수 있는 기능, 사이트 ID를 강제로 지정한다.
 SITE_ID = 1
 
 
@@ -185,12 +187,19 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 
-# Kakao
+# Kakao, Naer 제공
 SOCIALACCOUNT_PROVIDERS = {
     'kakao': {
         'APP': {
             'client_id': os.environ.get('kakao_client_id'),
             'secret': os.environ.get('kakao_secret'),
+            'key': ''
+        }
+    },
+    'naver': {
+        'APP': {
+            'client_id': os.environ.get('naver_client_id'),
+            'secret': os.environ.get('naver_secret'),
             'key': ''
         }
     }

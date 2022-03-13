@@ -45,14 +45,14 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('여', '여자')
     }
     name = models.CharField(max_length=15)
-    date = models.DateField(blank=True)
+    date = models.DateField(blank=True, null=True)
 
     gender = models.CharField(max_length=20, choices=Gender_choices)
 
     address = models.CharField(max_length=250, blank=True, null=True)
     phone_num = models.CharField(
         max_length=16, blank=True, null=True, unique=True)
-
+    user_type = models.CharField(max_length=50, default='basic')
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
 
