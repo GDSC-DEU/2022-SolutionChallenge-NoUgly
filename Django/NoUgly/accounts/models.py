@@ -45,7 +45,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         ('여', '여자')
     }
     name = models.CharField(max_length=15)
-    date = models.DateField(blank=True)
+    date = models.DateField(blank=True, null=True)
 
     gender = models.CharField(max_length=20, choices=Gender_choices)
 

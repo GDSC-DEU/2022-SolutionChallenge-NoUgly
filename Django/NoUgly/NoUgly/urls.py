@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from NoUgly import settings
+from accounts import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,7 +27,9 @@ urlpatterns = [
     path('rest-auth/', include('rest_auth.urls')),
     # 등록 및 소셜 미디어 인증과 관련된 논리가 있습니다.
     path('rest-auth/registration/', include('rest_auth.registration.urls')),
-
+    path('google/login', views.google_login, name='google_login'),
+    path('google/callback/', views.google_callback, name='google_callback'),  
+    path('google/login/finish/', views.GoogleLogin.as_view(), name='google_login_todjango'),
 ]
 
 

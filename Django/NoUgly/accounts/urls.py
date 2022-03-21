@@ -8,3 +8,4 @@ router.register(r'destination', DestinationViewSet)
 
 
 urlpatterns = router.urls
+
