@@ -95,6 +95,8 @@ def kakao_callback(request):
                 data = {'code': user_token,
                         'access_token': access_token,
                         }
+                print('data :', data)
+
                 accept = requests.post(
                     f"http://127.0.0.1:8000/accounts/login/kakao/django",
                     data=data,
